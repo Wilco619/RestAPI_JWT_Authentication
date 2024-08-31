@@ -5,32 +5,8 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
-from .models import CustomUser, AdminUser, CustomerData, StaffUser, Customer
+from .models import CustomUser, AdminUser, RegionalManager, StaffUser, Customer
 
-class CustomUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['username', 'email', 'password', 'user_type', 'first_name', 'last_name']
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'first_name': {'required': False},
-            'last_name': {'required': False},
-        }
-
-    def create(self, validated_data):
-        username = validated_data['username']
-        if CustomUser.objects.filter(username=username).exists():
-            raise ValidationError({"username": "This username is already taken."})
-
-        user = CustomUser.objects.create_user(
-            username=username,
-            email=validated_data['email'],
-            password=validated_data['password'],
-            user_type=validated_data['user_type'],
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', '')
-        )
-        return user
 
 class UserLoginSerializer(serializers.ModelSerializer):
     email=serializers.CharField()
@@ -71,6 +47,30 @@ class OTPSerializer(serializers.Serializer):
 
         return data
     
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'password', 'user_type', 'first_name', 'last_name']
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+        }
+
+    def create(self, validated_data):
+        username = validated_data['username']
+        if CustomUser.objects.filter(username=username).exists():
+            raise ValidationError({"username": "This username is already taken."})
+
+        user = CustomUser.objects.create_user(
+            username=username,
+            email=validated_data['email'],
+            password=validated_data['password'],
+            user_type=validated_data['user_type'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', '')
+        )
+        return user
     
 class AdminUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True)
@@ -109,7 +109,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
             last_name=lastname,
             email=email,
             username=username,
-            password=make_password(password),  # Hash the password
+            password=password,
             user_type=1,  # AdminUser
         )
 
@@ -170,7 +170,7 @@ class StaffUserSerializer(serializers.ModelSerializer):
             last_name=lastname,
             email=email,
             username=username,
-            password=make_password(password),  # Hash the password
+            password=password,
             user_type=2,  # StaffUser
         )
 
@@ -194,7 +194,7 @@ class StaffUserSerializer(serializers.ModelSerializer):
 
 
 
-class CustomerSerializer(serializers.ModelSerializer):
+class RegionalManagerSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True)
     username = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True)
@@ -202,7 +202,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     lastname = serializers.CharField(write_only=True)
 
     class Meta:
-        model = Customer
+        model = RegionalManager
         fields = [
             'id',
             'firstname',
@@ -231,11 +231,11 @@ class CustomerSerializer(serializers.ModelSerializer):
             last_name=lastname,
             email=email,
             username=username,
-            password=make_password(password),  # Hash the password
+            password=password,
             user_type=3,  # Customer
         )
 
-        customer = Customer.objects.create(
+        customer = RegionalManager.objects.create(
             user=user,
             gender=validated_data.get('gender'),
             address=validated_data.get('address'),
@@ -271,21 +271,43 @@ class CustomerSerializer(serializers.ModelSerializer):
         return representation
 
 
+class CustomerSerializer(serializers.ModelSerializer):
+    staff_email = serializers.EmailField(source='staff.user.email', read_only=True)
+    staff_name = serializers.SerializerMethodField()
+    staff_id_number = serializers.CharField(source='staff.id_number', read_only=True)
+    staff_phone = serializers.CharField(source='staff.phone', read_only=True)  # Add this line
 
-class CustomerDataSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomerData
+        model = Customer
         fields = [
-            'id',
-            'staff',
-            'firstname',
-            'lastname',
-            'phone',
-            'id_number',
-            'branch',
-            'gender',
-            'active',
-            'created_at',
-            'updated_at'
+            'id', 'staff', 'staff_email', 'staff_name', 'staff_id_number', 'staff_phone', 'firstname', 'lastname', 'age',
+            'gender', 'phone', 'email', 'id_number', 'branch',
+            'residence', 'residence_type', 'business_type',
+            'business_area', 'next_of_keen', 'guaranter_firstname',
+            'guaranter_lastname', 'guaranter_age', 'guaranter_business_type',
+            'guaranter_phone', 'guaranter_id', 'guaranter_gender',
+            'active', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'staff', 'staff_email', 'staff_name', 'staff_id_number', 'staff_phone', 'active']
+
+    def get_staff_name(self, obj):
+        return f"{obj.staff.user.first_name} {obj.staff.user.last_name}"
+
+    def create(self, validated_data):
+        id_number = validated_data.get('id_number')
+
+        # Check if a customer with the given id_number already exists
+        if Customer.objects.filter(id_number=id_number).exists():
+            raise serializers.ValidationError("A customer with this ID number already exists.")
+
+        staff = self.context['request'].user.staffuser
+        customer = Customer.objects.create(staff=staff, **validated_data)
+        return customer
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
+

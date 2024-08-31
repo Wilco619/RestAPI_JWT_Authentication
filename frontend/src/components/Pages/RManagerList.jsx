@@ -12,7 +12,7 @@ import Menu from '@mui/material/Menu';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 
-const StaffList = () => {
+const RManagerList = () => {
     const [rows, setRows] = useState([]);
     const [columns] = useState([
         { field: 'id', headerName: 'ID', width: 50 },
@@ -29,11 +29,11 @@ const StaffList = () => {
     ]);
 
     const userTableStyles = {
-        height: '650px',
-    };
+      height: '650px',
+  };
 
     useEffect(() => {
-        api.get('/list/staffs-list/')
+        api.get('/list/rmanagers-list/')
             .then(response => {
                 const data = response.data.map(item => ({
                     id: item.id,
@@ -55,6 +55,7 @@ const StaffList = () => {
             });
     }, []);
 
+
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
     const handleCloseUserMenu = () => {
@@ -67,7 +68,7 @@ const StaffList = () => {
 
     return (
         <div>
-            <p>List Of Staff</p>
+            <p>List Of R.Managers</p>
             <div style={{ border:"solid 1px black", width:"10%", textAlign:"center"}}>
                 <Box sx={{ flexGrow: 0 }}>
                     <Tooltip title="Export List">
@@ -92,10 +93,10 @@ const StaffList = () => {
                         onClose={handleCloseUserMenu}
                     >
                         <MenuItem>
-                            <CsvExport data={rows} filename="staffs-list.csv" />
+                            <CsvExport data={rows} filename="rmanagers-list.csv" />
                         </MenuItem>
                         <MenuItem>
-                            <ExcelExport data={rows} filename="staffs-list.xlsx" />
+                            <ExcelExport data={rows} filename="rmanagers-list.xlsx" />
                         </MenuItem>
                     </Menu>
                 </Box>
@@ -104,5 +105,4 @@ const StaffList = () => {
         </div>
     );
 };
-
-export default StaffList;
+export default RManagerList;

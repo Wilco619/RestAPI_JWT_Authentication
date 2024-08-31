@@ -17,9 +17,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Handle 401 errors (Unauthorized)
@@ -30,7 +28,7 @@ api.interceptors.response.use(
 
     if (error.code === 'ECONNABORTED') {
       console.error("Request timed out:", error.message);
-      return Promise.reject(error);  // You can handle the timeout error appropriately here
+      return Promise.reject(error);  // Handle timeout error appropriately
     }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -42,6 +40,7 @@ api.interceptors.response.use(
           throw new Error("Refresh token not found.");
         }
 
+        // Make sure the refresh token endpoint is correct and handling requests properly
         const response = await axios.post(`${apiUrl}/token/refresh/`, {
           refresh: refreshToken,
         });
@@ -58,13 +57,13 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         console.error("Token refresh failed:", err.response?.data || err.message);
-        
+
         // If refresh fails, clear tokens and redirect to login or handle error
         localStorage.removeItem(ACCESS_TOKEN);
         localStorage.removeItem(REFRESH_TOKEN);
 
         // Redirect to login page
-        window.location.href = '/';  // Adjust this path as necessary
+        window.location.href = '/home';  // Adjust this path as necessary
         return Promise.reject(err);
       }
     }

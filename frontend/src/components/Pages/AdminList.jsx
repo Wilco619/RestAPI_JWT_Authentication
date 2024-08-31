@@ -3,6 +3,14 @@ import "./Users.css";
 import { useEffect, useState } from 'react';
 import api from '../../api';
 import DataTable from "../sub-components/DataTable";
+import ExcelExport from '../FileExport/ExportExcel';
+import CsvExport from '../FileExport/ExportCsv';
+
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
 
 const AdminList = () => {
     const [rows, setRows] = useState([]);
@@ -47,9 +55,51 @@ const AdminList = () => {
             });
     }, []);
 
+    const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
+
+    const handleOpenUserMenu = (event) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
   return (
     <div>
       <p>Admin List</p>
+      <div style={{ border:"solid 1px black", width:"10%", textAlign:"center"}}>
+                <Box sx={{ flexGrow: 0 }}>
+                    <Tooltip title="Export List">
+                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                            Export
+                        </IconButton>
+                    </Tooltip>
+                    <Menu
+                        sx={{ mt: '45px' }}
+                        id="menu-appbar"
+                        anchorEl={anchorElUser}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        keepMounted
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        open={Boolean(anchorElUser)}
+                        onClose={handleCloseUserMenu}
+                    >
+                        <MenuItem>
+                            <CsvExport data={rows} filename="admins-list.csv" />
+                        </MenuItem>
+                        <MenuItem>
+                            <ExcelExport data={rows} filename="admins-list.xlsx" />
+                        </MenuItem>
+                    </Menu>
+                </Box>
+            </div>
       <DataTable rows={rows} columns={columns} loading={!rows.length} sx={userTableStyles} />
     </div>
   )

@@ -18,11 +18,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Tooltip from '@mui/material/Tooltip';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
 import AccountMenu from '../components/sub-components/AccountMenu';
 import { Outlet, Link } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import { NavText } from './Data';
+import "./App.css"
 import api from "../api"
 import { ACCESS_TOKEN } from '../constants';
 
@@ -174,8 +174,8 @@ export default function MiniDrawer() {
               >
                 <MenuIcon />
               </IconButton>
-              <Typography variant="h6" noWrap component="div" sx={{ marginLeft: 'auto' }}>
-                <h2>Welcome back {username},</h2>
+              <Typography variant="h6" component="div" sx={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', }}>
+                <h2 className="welcome-text">Welcome back {username}.</h2>
                 <AccountMenu />
               </Typography>
             </Toolbar>
@@ -240,7 +240,11 @@ export default function MiniDrawer() {
         </Box>
 
       ):(
-        <h2>Please Login</h2>
+        <div className='warning-page'>
+          <h2>Something Went Wrong!</h2>
+          <h1>Please Login</h1>
+
+        </div>
       )}
 
     </div>

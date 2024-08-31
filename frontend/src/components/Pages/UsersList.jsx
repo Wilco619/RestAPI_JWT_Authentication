@@ -20,6 +20,12 @@ const UsersList = () => {
           Staff List
         </NavLink>
         <NavLink
+          to="/home/users/userList/RManagerList"
+          className={({ isActive }) => (isActive ? 'button active' : 'button')}
+        >
+          R Manager List
+        </NavLink>
+        <NavLink
           to="/home/users/userList/AdminList"
           className={({ isActive }) => (isActive ? 'button active' : 'button')}
         >

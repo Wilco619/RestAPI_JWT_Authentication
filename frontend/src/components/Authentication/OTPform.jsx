@@ -56,7 +56,7 @@ const OTPform = () => {
                 <div className='login-form'>
                     <form onSubmit={handleVerifyOTP}>
                         <input
-                            type="text"
+                            type="number"
                             name="otp"
                             placeholder="Enter OTP"
                             value={otp}

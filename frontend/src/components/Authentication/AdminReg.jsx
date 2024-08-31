@@ -53,6 +53,7 @@ const AdminRegistrationForm = () => {
       
     return (
         <div>
+            <p className='form-function'>Admin Registration Form</p>
             <form className="form" onSubmit={handleSubmit}>
                 <div className='form-section'>
                     <input type="text" name="firstname" value={formData.firstname} placeholder="Firstname" onChange={handleChange} />
@@ -61,8 +62,8 @@ const AdminRegistrationForm = () => {
                     <input type="email" name="email" value={formData.email} placeholder="Email" onChange={handleChange} />
                 </div>
                 <div className='form-section'>
-                    <input type="text" name="phone" value={formData.phone} placeholder="Phone" onChange={handleChange} />  
-                    <input type="text" name="id_number" value={formData.id_number} placeholder="ID" onChange={handleChange} />
+                    <input type="number" name="phone" value={formData.phone} placeholder="Phone" onChange={handleChange} />  
+                    <input type="number" name="id_number" value={formData.id_number} placeholder="ID" onChange={handleChange} />
                     <input type="text" name="address" value={formData.address} placeholder="Address" onChange={handleChange} />
                     <input type="text" name="gender" value={formData.gender} placeholder="Gender" onChange={handleChange} />
                 </div>

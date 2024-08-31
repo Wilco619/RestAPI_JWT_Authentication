@@ -17,7 +17,8 @@ import AdminList from './components/Pages/AdminList';
 import StaffList from './components/Pages/StaffList';
 import CustomerList from './components/Pages/CustomerList';
 import Customer from './components/Pages/Customer';
-import CustomerDataForm from './components/Authentication/CustomerData';
+import RegionalManagerRegistrationForm from './components/Authentication/RegionalManagerReg';
+import RManagerList from './components/Pages/RManagerList';
 
 const router = createBrowserRouter([
   {
@@ -51,11 +52,7 @@ const router = createBrowserRouter([
           {
             path: "CustomerList",
             element: <CustomerList />,
-          },      
-          {
-            path: "CustomerData",
-            element: <CustomerDataForm />,
-          },      
+          },           
         ],
       },
       {
@@ -78,6 +75,10 @@ const router = createBrowserRouter([
                 path: "StaffReg",
                 element: <StaffRegistrationForm />,
               },
+              {
+                path: "RManagerReg",
+                element: <RegionalManagerRegistrationForm />,
+              },
             ],
           },
           {
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
               {
                 path: "StaffList",
                 element: <StaffList />,
+              },
+              {
+                path: "RManagerList",
+                element: <RManagerList />,
               },
             ],
           },

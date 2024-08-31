@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
 import api from '../../api';
-import "./Forms.css"
+import { toast } from 'react-toastify';
 
-const StaffRegistrationForm = () => {
+const RegionalManagerRegistrationForm = () => {
     const [formData, setFormData] = useState({
         email: '',
         firstname: '',
@@ -33,8 +32,8 @@ const StaffRegistrationForm = () => {
         if (!isButtonActive) return; // Prevent submission if button is inactive
 
         try {
-            await api.post('/create-staff/', formData);
-            toast.success('Staff user created successfully!');
+            await api.post('/create-regional-manager/', formData);
+            toast.success('Regional Manager created successfully!');
             setFormData({
                 email: '',
                 firstname: '',
@@ -50,10 +49,10 @@ const StaffRegistrationForm = () => {
             toast.error(err.response?.data?.detail || 'An error occurred');
         }
     };
-    
+
     return (
         <div>
-            <p className='form-function'>Staff Registration Form</p>
+            <p className='form-function'>R Manager Registration Form</p>
             <form className="flex form" onSubmit={handleSubmit}>
                 <div className='form-section'>
                     <input 
@@ -131,7 +130,7 @@ const StaffRegistrationForm = () => {
                         }} 
                         disabled={!isButtonActive}
                     >
-                        Register Staff
+                        Register R Manager
                     </button>
                 </div>
             </form>
@@ -139,4 +138,4 @@ const StaffRegistrationForm = () => {
     );
 };
 
-export default StaffRegistrationForm;
+export default RegionalManagerRegistrationForm;

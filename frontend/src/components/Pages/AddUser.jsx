@@ -14,6 +14,7 @@ const AddUser = () => {
       <div className='regbtncontainer'>
           {/* <NavLink className={"button"} to={"/home/users/Registration/CustomerReg"}>Register New Customer</NavLink> */}
           <NavLink className={"button"} to={"/home/users/Registration/StaffReg"}>+ New Staff</NavLink>
+          <NavLink className={"button"} to={"/home/users/Registration/RManagerReg"}>+ New R.Manager</NavLink>
           <NavLink className={"button"} to={"/home/users/Registration/AdminReg"}>+ New Admin</NavLink>
       </div>
       <div>

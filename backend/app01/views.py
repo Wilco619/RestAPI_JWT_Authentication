@@ -4,17 +4,16 @@ import random
 from django.conf import settings
 from django.utils import timezone
 from django.core.mail import send_mail
-from rest_framework.views import APIView
 from django.db import transaction
-from rest_framework.exceptions import ValidationError
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import viewsets, generics, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.models import AnonymousUser
-from rest_framework import viewsets, permissions, status
-from .models import AdminUser, StaffUser, Customer, CustomUser
-from .serializers import AdminUserSerializer, CustomerDataSerializer, OTPSerializer, StaffUserSerializer, CustomerSerializer, CustomUserSerializer, UserLoginSerializer
+from .models import AdminUser, RegionalManager, StaffUser, Customer, CustomUser
+from .serializers import AdminUserSerializer, OTPSerializer, RegionalManagerSerializer, StaffUserSerializer, CustomerSerializer, CustomUserSerializer, UserLoginSerializer
 
 class LoginView(GenericAPIView):
     permission_classes = (AllowAny,)
@@ -126,12 +125,15 @@ class CreateAdminUserView(APIView):
         }
 
         try:
-            custom_user, created = CustomUser.objects.get_or_create(email=custom_user_data['email'], defaults=custom_user_data)
-            if not created:
-                # Update user data if it already exists
-                for attr, value in custom_user_data.items():
-                    setattr(custom_user, attr, value)
-                custom_user.save()
+            # Use create_user method to ensure password hashing
+            custom_user = CustomUser.objects.create_user(
+                email=custom_user_data['email'],
+                username=custom_user_data['username'],
+                password=custom_user_data['password'],
+                user_type=custom_user_data['user_type'],
+                first_name=custom_user_data['first_name'],
+                last_name=custom_user_data['last_name']
+            )
 
             admin_user, created = AdminUser.objects.get_or_create(user=custom_user, defaults=admin_user_data)
             if not created:
@@ -177,11 +179,15 @@ class CreateStaffUserView(APIView):
         }
 
         try:
-            custom_user, created = CustomUser.objects.get_or_create(email=custom_user_data['email'], defaults=custom_user_data)
-            if not created:
-                for attr, value in custom_user_data.items():
-                    setattr(custom_user, attr, value)
-                custom_user.save()
+            # Use create_user method to ensure password hashing
+            custom_user = CustomUser.objects.create_user(
+                email=custom_user_data['email'],
+                username=custom_user_data['username'],
+                password=custom_user_data['password'],
+                user_type=custom_user_data['user_type'],
+                first_name=custom_user_data['first_name'],
+                last_name=custom_user_data['last_name']
+            )
 
             staff_user, created = StaffUser.objects.get_or_create(user=custom_user, defaults=staff_user_data)
             if not created:
@@ -204,7 +210,7 @@ class CreateStaffUserView(APIView):
             print("Traceback:", traceback.format_exc())
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class CreateCustomerView(APIView):
+class CreateRegionalManagerView(APIView):
     permission_classes=(IsAuthenticated,)
 
     @transaction.atomic
@@ -218,7 +224,7 @@ class CreateCustomerView(APIView):
             'last_name': request.data.get('lastname'),
         }
 
-        customer_data = {
+        regional_manager_data = {
             'gender': request.data.get('gender'),
             'address': request.data.get('address'),
             'id_number': request.data.get('id_number'),  # Changed from i_d to id_number
@@ -226,21 +232,25 @@ class CreateCustomerView(APIView):
         }
 
         try:
-            custom_user, created = CustomUser.objects.get_or_create(email=custom_user_data['email'], defaults=custom_user_data)
-            if not created:
-                for attr, value in custom_user_data.items():
-                    setattr(custom_user, attr, value)
-                custom_user.save()
+            # Use create_user method to ensure password hashing
+            custom_user = CustomUser.objects.create_user(
+                email=custom_user_data['email'],
+                username=custom_user_data['username'],
+                password=custom_user_data['password'],
+                user_type=custom_user_data['user_type'],
+                first_name=custom_user_data['first_name'],
+                last_name=custom_user_data['last_name']
+            )
 
-            customer, created = Customer.objects.get_or_create(user=custom_user, defaults=customer_data)
+            regional_manager, created = RegionalManager.objects.get_or_create(user=custom_user, defaults=regional_manager_data)
             if not created:
-                for attr, value in customer_data.items():
-                    setattr(customer, attr, value)
-                customer.save()
+                for attr, value in regional_manager_data.items():
+                    setattr(regional_manager, attr, value)
+                regional_manager.save()
 
             response_data = {
                 'custom_user': CustomUserSerializer(custom_user).data,
-                'customer': CustomerSerializer(customer).data
+                'customer': RegionalManagerSerializer(regional_manager).data
             }
 
             return Response(response_data, status=status.HTTP_201_CREATED)
@@ -270,10 +280,10 @@ class StaffUserViewSet(viewsets.ModelViewSet):
     serializer_class = StaffUserSerializer
     # permission_classes = [permissions.IsAdminUser]  # Admin-only access
 
-class CustomerViewSet(viewsets.ModelViewSet):
+class RmanagerViewSet(viewsets.ModelViewSet):
     permission_classes=(IsAuthenticated,)
-    queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
+    queryset = RegionalManager.objects.all()
+    serializer_class = RegionalManagerSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -290,31 +300,27 @@ class CustomerCountView(APIView):
         count = Customer.objects.count()
         return Response({'customer_count': count})
 
-class CustomerDataViewSet(APIView):
-    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
+class CustomerListView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CustomerSerializer
 
-    def post(self, request, *args, **kwargs):
-        # Check if the user is authenticated
-        if isinstance(request.user, AnonymousUser):
-            return Response({'detail': 'Authentication credentials were not provided.'}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        # Ensure the user is a StaffUser
-        if request.user.user_type != '2':
-            return Response({'detail': 'User is not a staff member.'}, status=status.HTTP_403_FORBIDDEN)
+    def get_queryset(self):
+        if self.request.user.user_type == 2:  # Assuming 2 is the StaffUser type
+            return Customer.objects.filter(staff=self.request.user.staffuser)
+        elif self.request.user.user_type == 1:  # Assuming 1 is the AdminUser type
+            return Customer.objects.all()
+        return Customer.objects.none()
 
-        customer_data = {
-            'staff': request.user.staffuser.id,  # Link to the current staff user
-            'firstname': request.data.get('firstname'),
-            'lastname': request.data.get('lastname'),
-            'phone': request.data.get('phone'),
-            'id_number': request.data.get('id_number'),
-            'branch': request.data.get('branch'),
-            'gender': request.data.get('gender'),
-            'active': request.data.get('active', True)  # Default to True if not provided
-        }
+    def perform_create(self, serializer):
+        serializer.save(staff=self.request.user.staffuser)
 
-        serializer = CustomerDataSerializer(data=customer_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class CustomerDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CustomerSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        if self.request.user.user_type == 2:  # StaffUser
+            return Customer.objects.filter(staff=self.request.user.staffuser)
+        elif self.request.user.user_type == 1:  # AdminUser
+            return Customer.objects.all()
+        return Customer.objects.none()

@@ -133,3 +133,17 @@
     grid-row: 1 / 3;
     /* Span from row 1 to row 3 (exclusive) */
 }
+
+.welcome-text {
+    font-size: .9rem; /* Adjust the font size as needed */
+    margin-right: 10px;
+    text-transform: capitalize; /* Optional: Adjust the margin */
+}
+
+.warning-page{
+    text-align: center;
+    padding-top: 300px;
+    margin: auto;
+    width: 100vw;
+    height: 100vh;
+}
