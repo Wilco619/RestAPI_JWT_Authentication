@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -8,22 +9,30 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
-import LogOut from '../Authentication/LogOut'
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogOut from '../Authentication/LogOut';
 
 const AccountMenu = () => {
-
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();  // Initialize the useNavigate hook
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleSettingsClick = () => {
+    handleClose();
+    navigate('/home/settings');  // Navigate to the settings page within the protected route
+  };
+
   return (
     <React.Fragment>
-      <Box sx={{ display: 'flex', alignItems: 'right', textAlign: 'center' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         <Tooltip title="Account settings">
           <IconButton
             onClick={handleClick}
@@ -42,7 +51,6 @@ const AccountMenu = () => {
         id="account-menu"
         open={open}
         onClose={handleClose}
-        onClick={handleClose}
         PaperProps={{
           elevation: 0,
           sx: {
@@ -85,18 +93,18 @@ const AccountMenu = () => {
           </ListItemIcon>
           Add another account
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleSettingsClick}>
           <ListItemIcon>
-            <Settings fontSize="small" />
+            <SettingsIcon fontSize="small" />
           </ListItemIcon>
           Settings
         </MenuItem>
         <MenuItem onClick={handleClose}>
-          <LogOut/>
+          <LogOut />
         </MenuItem>
       </Menu>
     </React.Fragment>
-  )
-}
+  );
+};
 
 export default AccountMenu;

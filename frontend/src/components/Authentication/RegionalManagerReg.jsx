@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../../api';
 import { toast } from 'react-toastify';
+import { Box, Grid, TextField, Button, Typography, InputLabel, MenuItem, Select } from '@mui/material';
 
 const RegionalManagerRegistrationForm = () => {
     const [formData, setFormData] = useState({
@@ -8,7 +9,6 @@ const RegionalManagerRegistrationForm = () => {
         firstname: '',
         lastname: '',
         username: '',
-        password: '',
         gender: '',
         address: '',
         id_number: '',
@@ -39,7 +39,6 @@ const RegionalManagerRegistrationForm = () => {
                 firstname: '',
                 lastname: '',
                 username: '',
-                password: '',
                 gender: '',
                 address: '',
                 id_number: '',
@@ -51,90 +50,139 @@ const RegionalManagerRegistrationForm = () => {
     };
 
     return (
-        <div>
-            <p className='form-function'>R Manager Registration Form</p>
-            <form className="flex form" onSubmit={handleSubmit}>
-                <div className='form-section'>
-                    <input 
-                        type="text" 
-                        name="firstname" 
-                        value={formData.firstname} 
-                        placeholder="Firstname" 
-                        onChange={handleChange} 
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            p: 2,
+            maxWidth: 1200,
+            mx: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+          }}
+        >
+            <Typography variant="h6" component="p" gutterBottom>
+                Regional Manager Registration Form
+            </Typography>
+            <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        name="firstname"
+                        label="First Name"
+                        value={formData.firstname}
+                        onChange={handleChange}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
                     />
-                    <input 
-                        type="text" 
-                        name="lastname" 
-                        value={formData.lastname} 
-                        placeholder="Lastname" 
-                        onChange={handleChange} 
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        name="lastname"
+                        label="Last Name"
+                        value={formData.lastname}
+                        onChange={handleChange}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
                     />
-                    <input 
-                        type="text" 
-                        name="username" 
-                        value={formData.username} 
-                        placeholder="Username" 
-                        onChange={handleChange} 
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        name="username"
+                        label="Username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
                     />
-                    <input 
-                        type="email" 
-                        name="email" 
-                        value={formData.email} 
-                        placeholder="Email" 
-                        onChange={handleChange} 
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        name="email"
+                        label="Email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
                     />
-                </div>
-                <div className='form-section'>
-                    <input 
-                        type="number" 
-                        name="phone" 
-                        value={formData.phone} 
-                        placeholder="Phone" 
-                        onChange={handleChange} 
-                    />  
-                    <input 
-                        type="number" 
-                        name="id_number" 
-                        value={formData.id_number} 
-                        placeholder="ID" 
-                        onChange={handleChange} 
+                </Grid>
+            </Grid>
+            
+            <Typography variant="h6" component="p" gutterBottom sx={{ mt: 4 }}>
+                Contact Information
+            </Typography>
+            <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        name="phone"
+                        label="Phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        type="tel"
                     />
-                    <input 
-                        type="text" 
-                        name="address" 
-                        value={formData.address} 
-                        placeholder="Address" 
-                        onChange={handleChange} 
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        name="id_number"
+                        label="ID Number"
+                        value={formData.id_number}
+                        onChange={handleChange}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
                     />
-                    <input 
-                        type="text" 
-                        name="gender" 
-                        value={formData.gender} 
-                        placeholder="Gender" 
-                        onChange={handleChange} 
+                </Grid>
+                <Grid item xs={12} md={12}>
+                    <TextField
+                        name="address"
+                        label="Address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
                     />
-                </div>
-                <div className='form-section'>
-                    <input 
-                        type="password" 
-                        name="password" 
-                        value={formData.password} 
-                        placeholder="Password" 
-                        onChange={handleChange} 
-                    />
-                    <button 
-                        type="submit" 
-                        style={{ 
-                            backgroundColor: isButtonActive ? '#135D66' : '#6c757da7',
-                            cursor: isButtonActive ? 'pointer' : 'not-allowed'
-                        }} 
-                        disabled={!isButtonActive}
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <InputLabel id="gender-label">Gender</InputLabel>
+                    <Select
+                        id="gender"
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                        fullWidth
+                        size="small"
+                        label="Gender"
                     >
-                        Register R Manager
-                    </button>
-                </div>
-            </form>
-        </div>
+                        <MenuItem value="" disabled>Gender</MenuItem>
+                        <MenuItem value="Male">Male</MenuItem>
+                        <MenuItem value="Female">Female</MenuItem>
+                    </Select>
+                </Grid>
+            </Grid>
+
+            <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ mt: 2, py: 1.5, fontSize: '16px' }}
+                disabled={!isButtonActive}
+                style={{
+                    backgroundColor: isButtonActive ? "#135D66" : "#6c757da7",
+                    cursor: isButtonActive ? "pointer" : "not-allowed",
+                }}
+            >
+                Register Regional Manager
+            </Button>
+        </Box>
     );
 };
 

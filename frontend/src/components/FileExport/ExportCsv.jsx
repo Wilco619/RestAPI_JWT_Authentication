@@ -8,9 +8,9 @@ const CsvExport = ({ data, filename }) => {
 
     const baseStyle = {
         width: '100%',
-        color: 'white',           // Text color
+        color: 'black',           // Text color
         textDecoration: 'none',   // Remove underline
-        backgroundColor: isHovered ? '#0056b3' : '#007bff', // Button background color
+        // backgroundColor: isHovered ? '#135D66' : '#0056b3', // Button background color
         padding: '8px 16px',      // Button padding
         borderRadius: '4px',      // Button border radius
         display: 'inline-block',  // Ensure button-like appearance

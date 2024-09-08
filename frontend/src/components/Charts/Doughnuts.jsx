@@ -1,6 +1,6 @@
 import { Chart } from "chart.js/auto"
 import { useEffect, useRef } from "react";
-import "../App.css"
+import "./Charts.css"
 
 const Doughnuts = () => {
 

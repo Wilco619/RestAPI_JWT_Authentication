@@ -19,7 +19,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import AccountMenu from '../components/sub-components/AccountMenu';
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, NavLink } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import { NavText } from './Data';
 import "./App.css"
@@ -92,11 +92,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-
 export default function MiniDrawer() {
-
+  const theme = useTheme();
+  const [open, setOpen] = useState(false);
+  const [expandedItem, setExpandedItem] = useState(null);
   const [username, setUsername] = useState("");
   const [isLoggedIn, setLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkLoggedInUser = async () => {
@@ -121,14 +123,12 @@ export default function MiniDrawer() {
         console.error("Error fetching user data:", error); // Debugging
         setLoggedIn(false);
         setUsername("");
+      } finally {
+        setLoading(false);
       }
     };
     checkLoggedInUser();
   }, []);
-
-  const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
-  const [expandedItem, setExpandedItem] = React.useState(null);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -142,14 +142,17 @@ export default function MiniDrawer() {
     setExpandedItem(expandedItem === item ? null : item);
   };
 
-  return (
+  if (loading) {
+    return <div>Loading...</div>; // Show loading state
+  }
 
+  return (
     <div>
       {isLoggedIn ? (
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
-          <AppBar position="fixed" open={open}>
-            <Toolbar sx={{ backgroundColor: '#135D66' }}>
+          <AppBar position="fixed" open={open} sx={{ boxShadow:"none" }}>
+            <Toolbar sx={{ backgroundColor: '#1f1f1f'}}>
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
@@ -164,7 +167,7 @@ export default function MiniDrawer() {
               </IconButton>
               <IconButton
                 color="inherit"
-                aria-label="open drawer"
+                aria-label="close drawer"
                 onClick={handleDrawerClose}
                 edge="start"
                 sx={{
@@ -238,15 +241,13 @@ export default function MiniDrawer() {
           </Box>
           <ToastContainer />
         </Box>
-
-      ):(
+      ) : (
         <div className='warning-page'>
-          <h2>Something Went Wrong!</h2>
-          <h1>Please Login</h1>
-
+          <h2>Sorry!</h2>
+          <h1>Please Login First</h1>
+          <NavLink className={'button'} to="/">LogIn</NavLink>
         </div>
       )}
-
     </div>
   );
 }

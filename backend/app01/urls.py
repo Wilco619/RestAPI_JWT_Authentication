@@ -1,6 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from .views import CustomUserViewSet, AdminUserViewSet, CustomerCountView, CustomerDetailView, CustomerListView, RmanagerViewSet, StaffUserViewSet, UserInfoAPIView, UserLogOutAPIView
+from .views import CustomUserViewSet, AdminUserViewSet, CustomerCountView, CustomerDetailView, CustomerListView, PasswordChangeView, RmanagerViewSet, StaffUserViewSet, UserInfoAPIView, UserLogOutAPIView
 from .views import  CreateAdminUserView, CreateRegionalManagerView, CreateStaffUserView, LoginView, VerifyOTPView
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -18,6 +18,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', UserLogOutAPIView.as_view(), name='logout_user'),
+    path('change-password/', PasswordChangeView.as_view(), name='change-password'),
     path('user/', UserInfoAPIView.as_view(), name='user-info'),
     
     path('list/', include(router.urls)),

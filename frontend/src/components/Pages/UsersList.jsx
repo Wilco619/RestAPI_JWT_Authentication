@@ -14,20 +14,20 @@ const UsersList = () => {
       <div>
       <div className='regbtncontainer'>
         <NavLink 
-          className={({ isActive }) => isActive ? 'button active' : 'button'}
+          className={({ isActive }) => isActive ? 'btn active' : 'btn'}
           to="/home/users/userList/StaffList"
         >
           Staff List
         </NavLink>
         <NavLink
           to="/home/users/userList/RManagerList"
-          className={({ isActive }) => (isActive ? 'button active' : 'button')}
+          className={({ isActive }) => (isActive ? 'btn active' : 'btn')}
         >
           R Manager List
         </NavLink>
         <NavLink
           to="/home/users/userList/AdminList"
-          className={({ isActive }) => (isActive ? 'button active' : 'button')}
+          className={({ isActive }) => (isActive ? 'btn active' : 'btn')}
         >
           Admin List
         </NavLink>

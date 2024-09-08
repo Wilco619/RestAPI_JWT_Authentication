@@ -1,17 +1,30 @@
-.ErrorPage{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    height: 100vh;
-    width: 100vw;
-    background-color: #f0f0f0;
-}
 
-.ErrorPage h1{
-    color: #007bff;
-}
 
-.ErrorPage i{
-    color: crimson;
-}
+
+  /* Medium Devices (Tablets, 768px and up) */
+  @media screen and (min-width: 768px) {}
+
+  /* Large Devices (Desktops, 992px and up) */
+  @media screen and (min-width: 992px) {}
+  
+  /* Extra Large Devices (Large Desktops, 1200px and up) */
+  @media screen and (min-width: 1200px) {
+    .ErrorPage{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        height: 100vh;
+        width: 100vw;
+        background-color: #f0f0f0;
+    }
+    
+    .ErrorPage h1{
+        color: #007bff;
+    }
+    
+    .ErrorPage i{
+        color: crimson;
+    }
+   
+  }

@@ -15,8 +15,8 @@ const ExcelExport = ({ data, filename }) => {
 
   const baseStyle = {
     width: '100%',
-    color: 'white',                 // Text color
-    backgroundColor: isHovered ? '#0056b3' : '#007bff', // Background color with hover effect
+    color: 'black',                 // Text color
+    // backgroundColor: isHovered ? '#135D66' : '#0056b3', // Background color with hover effect
     padding: '8px 14px',            // Button padding
     borderRadius: '4px',            // Button border radius
     display: 'inline-block',        // Ensure button-like appearance

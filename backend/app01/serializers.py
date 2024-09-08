@@ -1,10 +1,15 @@
 # serializers.py
+import random
+import string
 from django.forms import ValidationError
 from rest_framework import serializers
 from django.utils import timezone
 from datetime import timedelta
+from django.core.mail import send_mail
+from django.conf import settings
 from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.hashers import check_password
 from .models import CustomUser, AdminUser, RegionalManager, StaffUser, Customer
 
 
@@ -47,6 +52,26 @@ class OTPSerializer(serializers.Serializer):
 
         return data
     
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Old password is not correct.")
+        return value
+
+    def validate_new_password(self, value):
+        user = self.context['request'].user
+        try:
+            validate_password(value, user)
+        except ValidationError as e:
+            raise serializers.ValidationError(list(e.messages))
+        return value
+    
+
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -72,10 +97,23 @@ class CustomUserSerializer(serializers.ModelSerializer):
         )
         return user
     
+    def update(self, instance, validated_data):
+        # Handle updates here if needed
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        
+        # Password update should be handled separately
+        if 'password' in validated_data:
+            instance.set_password(validated_data['password'])
+        
+        instance.save()
+        return instance
+    
 class AdminUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True)
     username = serializers.CharField(write_only=True)
-    password = serializers.CharField(write_only=True)
     firstname = serializers.CharField(write_only=True)
     lastname = serializers.CharField(write_only=True)
 
@@ -87,7 +125,6 @@ class AdminUserSerializer(serializers.ModelSerializer):
             'lastname',
             'email',
             'username',
-            'password',
             'gender',
             'address',
             'id_number',  # Changed from i_d to id_number
@@ -102,14 +139,14 @@ class AdminUserSerializer(serializers.ModelSerializer):
         lastname = validated_data.pop('lastname')
         email = validated_data.pop('email')
         username = validated_data.pop('username')
-        password = validated_data.pop('password')
+       
 
         user = CustomUser.objects.create_user(
             first_name=firstname,
             last_name=lastname,
             email=email,
             username=username,
-            password=password,
+            password=validated_data.pop('password', ''), 
             user_type=1,  # AdminUser
         )
 
@@ -132,11 +169,9 @@ class AdminUserSerializer(serializers.ModelSerializer):
         return representation
 
 
-
 class StaffUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True)
     username = serializers.CharField(write_only=True)
-    password = serializers.CharField(write_only=True)
     firstname = serializers.CharField(write_only=True)
     lastname = serializers.CharField(write_only=True)
 
@@ -148,7 +183,6 @@ class StaffUserSerializer(serializers.ModelSerializer):
             'lastname',
             'email',
             'username',
-            'password',
             'gender',
             'address',
             'id_number',  # Changed from i_d to id_number
@@ -163,14 +197,13 @@ class StaffUserSerializer(serializers.ModelSerializer):
         lastname = validated_data.pop('lastname')
         email = validated_data.pop('email')
         username = validated_data.pop('username')
-        password = validated_data.pop('password')
 
         user = CustomUser.objects.create_user(
             first_name=firstname,
             last_name=lastname,
             email=email,
             username=username,
-            password=password,
+            password=validated_data.pop('password', ''), 
             user_type=2,  # StaffUser
         )
 
@@ -197,7 +230,6 @@ class StaffUserSerializer(serializers.ModelSerializer):
 class RegionalManagerSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True)
     username = serializers.CharField(write_only=True)
-    password = serializers.CharField(write_only=True)
     firstname = serializers.CharField(write_only=True)
     lastname = serializers.CharField(write_only=True)
 
@@ -209,7 +241,6 @@ class RegionalManagerSerializer(serializers.ModelSerializer):
             'lastname',
             'email',
             'username',
-            'password',
             'gender',
             'address',
             'id_number',  # Changed from i_d to id_number
@@ -224,14 +255,13 @@ class RegionalManagerSerializer(serializers.ModelSerializer):
         lastname = validated_data.pop('lastname')
         email = validated_data.pop('email')
         username = validated_data.pop('username')
-        password = validated_data.pop('password')
 
         user = CustomUser.objects.create_user(
             first_name=firstname,
             last_name=lastname,
             email=email,
             username=username,
-            password=password,
+            password=validated_data.pop('password', ''), 
             user_type=3,  # Customer
         )
 
@@ -275,7 +305,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     staff_email = serializers.EmailField(source='staff.user.email', read_only=True)
     staff_name = serializers.SerializerMethodField()
     staff_id_number = serializers.CharField(source='staff.id_number', read_only=True)
-    staff_phone = serializers.CharField(source='staff.phone', read_only=True)  # Add this line
+    staff_phone = serializers.CharField(source='staff.phone', read_only=True)
 
     class Meta:
         model = Customer
@@ -283,7 +313,7 @@ class CustomerSerializer(serializers.ModelSerializer):
             'id', 'staff', 'staff_email', 'staff_name', 'staff_id_number', 'staff_phone', 'firstname', 'lastname', 'age',
             'gender', 'phone', 'email', 'id_number', 'branch',
             'residence', 'residence_type', 'business_type',
-            'business_area', 'next_of_keen', 'guaranter_firstname',
+            'business_area', 'next_of_keen', 'next_of_keen_contact', 'guaranter_firstname',
             'guaranter_lastname', 'guaranter_age', 'guaranter_business_type',
             'guaranter_phone', 'guaranter_id', 'guaranter_gender',
             'active', 'created_at', 'updated_at'
@@ -300,8 +330,7 @@ class CustomerSerializer(serializers.ModelSerializer):
         if Customer.objects.filter(id_number=id_number).exists():
             raise serializers.ValidationError("A customer with this ID number already exists.")
 
-        staff = self.context['request'].user.staffuser
-        customer = Customer.objects.create(staff=staff, **validated_data)
+        customer = Customer.objects.create(**validated_data)
         return customer
 
     def update(self, instance, validated_data):
@@ -309,5 +338,6 @@ class CustomerSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
+
 
 

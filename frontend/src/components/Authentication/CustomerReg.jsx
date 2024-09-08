@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import api from "../../api";
 import { toast } from "react-toastify";
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
 const CustomerRegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +17,7 @@ const CustomerRegistrationForm = () => {
     email: "",
     phone: "",
     id_number: "",
-    age:"",
+    age: "",
     gender: "",
     branch: "",
     residence: "",
@@ -17,6 +25,7 @@ const CustomerRegistrationForm = () => {
     business_type: "",
     business_area: "",
     next_of_keen: "",
+    next_of_keen_contact: "",
     guaranter_firstname: "",
     guaranter_lastname: "",
     guaranter_age: "",
@@ -50,7 +59,7 @@ const CustomerRegistrationForm = () => {
       setFormData({
         firstname: "",
         lastname: "",
-        age:"",
+        age: "",
         gender: "",
         phone: "",
         email: "",
@@ -61,6 +70,7 @@ const CustomerRegistrationForm = () => {
         business_type: "",
         business_area: "",
         next_of_keen: "",
+        next_of_keen_contact: "",
         guaranter_firstname: "",
         guaranter_lastname: "",
         guaranter_age: "",
@@ -70,83 +80,330 @@ const CustomerRegistrationForm = () => {
         guaranter_gender: "",
       });
     } catch (err) {
-      console.error("Error:", err); 
+      console.error("Error:", err);
       toast.error(err.response?.data?.detail || "An error occurred");
     }
   };
 
   return (
-    <div>
-      <p className='form-function'>Customer Registration Form</p>
-      <form className="form" onSubmit={handleSubmit}>
-        <div className="form-section">
-            <input type="text" name="firstname" value={formData.firstname} placeholder="First Name" onChange={handleChange} />
-            <input type="text" name="lastname" value={formData.lastname} placeholder="Last Name" onChange={handleChange} />
-            <input type="text" name="age" value={formData.age} placeholder="AGE" onChange={handleChange} />
-            <select name="gender" value={formData.gender} onChange={handleChange}>
-                <option value="" disabled >Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select>
-            <input type="text" name="phone" value={formData.phone} placeholder="Phone" onChange={handleChange} />
-            <input type="email" name="email" value={formData.email} placeholder="Email" onChange={handleChange} />
-            <input type="text" name="id_number" value={formData.id_number} placeholder="ID Number" onChange={handleChange} />
-        </div>
-        <div className="form-section">
-            <select placeholder="Select Branch" name="branch" value={formData.branch} onChange={handleChange}>
-                <option value="" disabled>Select Branch</option>
-                <option value="Nairobi">Nairobi</option>
-                <option value="Nakuru">Nakuru</option>
-                <option value="Mombasa">Mombasa</option>
-                <option value="Eldoret">Eldoret</option>
-                <option value="Kisii">Kisii</option>
-                <option value="Narok">Narok</option>
-            </select>
-            <input type="text" name="residence" value={formData.residence} placeholder="Residence" onChange={handleChange} />
-            <select placeholder="Select Residence Type" name="residence_type" value={formData.residence_type} onChange={handleChange}>
-                <option value="" disabled>Select Residence Type</option>
-                <option value="Area1">Area1</option>
-                <option value="Area2">Area2</option>
-                <option value="Area3">Area3</option>
-                <option value="Area4">Area4</option>
-            </select>
-            <select placeholder="Select Business Type" name="business_type" value={formData.business_type} onChange={handleChange}>
-                <option value="" disabled>Select Business Type</option>
-                <option value="Type1">Type1</option>
-                <option value="Type2">Type2</option>
-                <option value="Type3">Type3</option>
-                <option value="Type4">Type4</option>
-            </select>
-        </div>
-        <div className="form-section">
-            <input type="text" name="business_area" value={formData.business_area} placeholder="Business Area" onChange={handleChange} />
-            <input type="text" name="next_of_keen" value={formData.next_of_keen} placeholder="Next of Keen" onChange={handleChange} />
-            <input type="text" name="guaranter_firstname" value={formData.guaranter_firstname} placeholder="Guaranter First Name" onChange={handleChange} />
-            <input type="text" name="guaranter_lastname" value={formData.guaranter_lastname} placeholder="Guaranter Last Name" onChange={handleChange} />
-            <input type="text" name="guaranter_age" value={formData.guaranter_age} placeholder="Guaranter Age" onChange={handleChange} />
-        </div>
-        <div className="form-section">
-            <input type="text" name="guaranter_business_type" value={formData.guaranter_business_type} placeholder="Guaranter Business Type" onChange={handleChange} />
-            <input type="text" name="guaranter_phone" value={formData.guaranter_phone} placeholder="Guaranter Phone" onChange={handleChange} />
-            <input type="text" name="guaranter_id" value={formData.guaranter_id} placeholder="Guaranter ID" onChange={handleChange} />
-            <select placeholder="guaranter_gender" name="guaranter_gender" value={formData.guaranter_gender} onChange={handleChange}>
-                <option value="" disabled >Guaranter gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select>
-          <button
-            type="submit"
-            style={{
-              backgroundColor: isButtonActive ? "#135D66" : "#6c757da7",
-              cursor: isButtonActive ? "pointer" : "not-allowed",
-            }}
-            disabled={!isButtonActive}
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        p: 2,
+        maxWidth: 1200,
+        mx: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+      }}
+    >
+      <Typography variant="h6" component="p" gutterBottom>
+        Customer Registration Form
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="firstname"
+            label="First Name"
+            value={formData.firstname}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="lastname"
+            label="Last Name"
+            value={formData.lastname}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="age"
+            label="Age"
+            value={formData.age}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <InputLabel id="gender-label">Gender</InputLabel>
+          <Select
+            id="gender"
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            fullWidth
+            label="Gender"
+            size="small"
           >
-            Create Customer
-          </button>
-        </div>                
-      </form>
-    </div>
+            <MenuItem value="" disabled>Gender</MenuItem>
+            <MenuItem value="Male">Male</MenuItem>
+            <MenuItem value="Female">Female</MenuItem>
+          </Select>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="phone"
+            label="Phone"
+            value={formData.phone}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="email"
+            label="Email"
+            value={formData.email}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="id_number"
+            label="ID Number"
+            value={formData.id_number}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <InputLabel id="branch-label">Branch</InputLabel>
+          <Select
+            id="branch"
+            name="branch"
+            value={formData.branch}
+            onChange={handleChange}
+            fullWidth
+            label="Branch"
+            size="small"
+          >
+            <MenuItem value="" disabled>Select Branch</MenuItem>
+            <MenuItem value="Nairobi">Nairobi</MenuItem>
+            <MenuItem value="Nakuru">Nakuru</MenuItem>
+            <MenuItem value="Mombasa">Mombasa</MenuItem>
+            <MenuItem value="Eldoret">Eldoret</MenuItem>
+            <MenuItem value="Kisii">Kisii</MenuItem>
+            <MenuItem value="Narok">Narok</MenuItem>
+          </Select>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="residence"
+            label="Residence"
+            value={formData.residence}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <InputLabel id="residence-type-label">Residence Type</InputLabel>
+          <Select
+            id="residence_type"
+            name="residence_type"
+            value={formData.residence_type}
+            onChange={handleChange}
+            fullWidth
+            label="Residence Type"
+            size="small"
+          >
+            <MenuItem value="" disabled>Select Residence Type</MenuItem>
+            <MenuItem value="Area1">Area1</MenuItem>
+            <MenuItem value="Area2">Area2</MenuItem>
+            <MenuItem value="Area3">Area3</MenuItem>
+            <MenuItem value="Area4">Area4</MenuItem>
+          </Select>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <InputLabel id="business-type-label">Business Type</InputLabel>
+          <Select
+            id="business_type"
+            name="business_type"
+            value={formData.business_type}
+            onChange={handleChange}
+            fullWidth
+            label="Business Type"
+            size="small"
+          >
+            <MenuItem value="" disabled>Select Business Type</MenuItem>
+            <MenuItem value="Type1">Type1</MenuItem>
+            <MenuItem value="Type2">Type2</MenuItem>
+            <MenuItem value="Type3">Type3</MenuItem>
+            <MenuItem value="Type4">Type4</MenuItem>
+          </Select>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="business_area"
+            label="Business Area"
+            value={formData.business_area}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+      </Grid>
+
+      <Typography variant="h6" component="p" gutterBottom sx={{ mt: 4 }}>
+        Next of Keen
+      </Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="next_of_keen"
+            label="Next of Keen"
+            value={formData.next_of_keen}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+            sx={{ mb: 2 }}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="next_of_keen_contact"
+            label="Keen Contact"
+            value={formData.next_of_keen_contact}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+            sx={{ mb: 2 }}
+          />
+        </Grid>
+      </Grid>
+
+      <Typography variant="h6" component="p" gutterBottom sx={{ mt: 4 }}>
+        Guarantor Details
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="guaranter_firstname"
+            label="Guarantor First Name"
+            value={formData.guaranter_firstname}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="guaranter_lastname"
+            label="Guarantor Last Name"
+            value={formData.guaranter_lastname}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="guaranter_age"
+            label="Guarantor Age"
+            value={formData.guaranter_age}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <InputLabel id="guaranter-business-type-label">Guarantor Business Type</InputLabel>
+          <Select
+            id="guaranter_business_type"
+            name="guaranter_business_type"
+            value={formData.guaranter_business_type}
+            onChange={handleChange}
+            fullWidth
+            label="Guarantor Business Type"
+            size="small"
+          >
+            <MenuItem value="" disabled>Select Guarantor Business Type</MenuItem>
+            <MenuItem value="Type1">Type1</MenuItem>
+            <MenuItem value="Type2">Type2</MenuItem>
+            <MenuItem value="Type3">Type3</MenuItem>
+            <MenuItem value="Type4">Type4</MenuItem>
+          </Select>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="guaranter_phone"
+            label="Guarantor Phone"
+            value={formData.guaranter_phone}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            name="guaranter_id"
+            label="Guarantor ID"
+            value={formData.guaranter_id}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <InputLabel id="guaranter-gender-label">Guarantor Gender</InputLabel>
+          <Select
+            id="guaranter_gender"
+            name="guaranter_gender"
+            value={formData.guaranter_gender}
+            onChange={handleChange}
+            fullWidth
+            label="Guarantor Gender"
+            size="small"
+          >
+            <MenuItem value="" disabled>Guarantor Gender</MenuItem>
+            <MenuItem value="Male">Male</MenuItem>
+            <MenuItem value="Female">Female</MenuItem>
+          </Select>
+        </Grid>
+      </Grid>
+
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        fullWidth
+        sx={{ mt: 2, py: 1.5, fontSize: '16px' }}
+        disabled={!isButtonActive}
+        style={{
+          backgroundColor: isButtonActive ? "#135D66" : "#6c757da7",
+          cursor: isButtonActive ? "pointer" : "not-allowed",
+        }}
+      >
+        Create Customer
+      </Button>
+    </Box>
   );
 };
 

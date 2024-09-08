@@ -1,13 +1,12 @@
 import { ToastContainer } from 'react-toastify';
 import MiniDrawer from "./MainPage";
 
-const App = () => {
-
+const App = ({ username }) => {
   return (
-  <div>
-    <MiniDrawer/>
-    <ToastContainer />
-  </div>
+    <div>
+      <MiniDrawer username={username} />
+      <ToastContainer />
+    </div>
   );
 };
 

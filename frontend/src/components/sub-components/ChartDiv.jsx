@@ -1,4 +1,4 @@
-import "../App.css"
+import "../Charts/Charts.css"
 import Doughnuts from "../Charts/Doughnuts"
 import LineChart from "../Charts/LineChart"
 

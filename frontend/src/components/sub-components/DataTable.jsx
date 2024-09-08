@@ -1,19 +1,21 @@
-import React, {useState} from 'react'
-import { DataGrid } from '@mui/x-data-grid'
+import React from 'react';
+import { DataGrid } from '@mui/x-data-grid';
 
-const DataTable = ({rows, columns, loading}) => {
-const [pageSize, setPageSize] = useState(2);
-  return (
-    <DataGrid 
-      rows={rows} 
-      columns={columns} 
-      loading={loading}
-      pagination
-      pageSize={pageSize}
-      onPageSizeChange={(newPageSize)=> setPageSize(newPageSize)}
-      rowsPerPageOptions={[2,5,10]}
-    />
-  )
-}
+const DataTable = ({ rows, columns, loading, sx, pageSize, onPageSizeChange, rowsPerPageOptions }) => {
+    return (
+        <div style={{ height: 650, width: '100%' }}>
+            <DataGrid
+                rows={rows}
+                columns={columns}
+                loading={loading}
+                pageSize={pageSize}
+                onPageSizeChange={onPageSizeChange}
+                rowsPerPageOptions={rowsPerPageOptions}
+                pagination
+                sx={sx}
+            />
+        </div>
+    );
+};
 
-export default DataTable
+export default DataTable;

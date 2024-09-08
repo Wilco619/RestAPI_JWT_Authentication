@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import App from './components/App';
 import './index.css';
 import Login from './components/Authentication/Login';
@@ -19,103 +19,53 @@ import CustomerList from './components/Pages/CustomerList';
 import Customer from './components/Pages/Customer';
 import RegionalManagerRegistrationForm from './components/Authentication/RegionalManagerReg';
 import RManagerList from './components/Pages/RManagerList';
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Login />,
-  },
-  {
-    path: "/verify-otp",
-    element: <OTPform />,
-  },
-  {
-    path: "/home",
-    element: <App />,
-    children: [
-      {
-        path: "/home",
-        element: <Navigate to="dashboard" />, // Redirect /home to /home/dashboard
-      },
-      {
-        path: "dashboard",
-        element: <Dashboard />,
-      },
-      {
-        path: "customer",
-        element: <Customer />,
-        children: [
-          {
-            path: "CustomerReg",
-            element: <CustomerRegistrationForm />,
-          },
-          {
-            path: "CustomerList",
-            element: <CustomerList />,
-          },           
-        ],
-      },
-      {
-        path: "users",
-        element: <Users />,
-        children: [
-          {
-            path: "Registration",
-            element: <AddUser />,
-            children: [
-              {
-                path: "",
-                element: <Navigate to="StaffReg" replace />, 
-              },
-              {
-                path: "AdminReg",
-                element: <AdminRegistrationForm />,
-              },
-              {
-                path: "StaffReg",
-                element: <StaffRegistrationForm />,
-              },
-              {
-                path: "RManagerReg",
-                element: <RegionalManagerRegistrationForm />,
-              },
-            ],
-          },
-          {
-            path: "userList",
-            element: <UsersList />,
-            children: [
-              {
-                path: "",
-                element: <Navigate to="StaffList" replace />, // Redirect /home/users/userList to /home/users/userList/AdminList
-              },
-              {
-                path: "AdminList",
-                element: <AdminList />,
-              },
-              {
-                path: "StaffList",
-                element: <StaffList />,
-              },
-              {
-                path: "RManagerList",
-                element: <RManagerList />,
-              },
-            ],
-          },
-        ],
-      },
-      {
-        path: "*",
-        element: <ErrorPage />,
-      },
-    ],
-  },
-]);
+import ChangePasswordForm from './components/Authentication/ChangePassword';
+import Settings from './components/Authentication/Settings';
 
 
 const Main = () => {
-  return <RouterProvider router={router} />;
+  
+
+  return (
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Login />} />
+        <Route path="/verify-otp" element={<OTPform />} />
+
+        {/* Private Routes */}
+        
+          <Route path="/home" element={<App />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+              <Route path="customer" element={<Customer />}>
+              <Route path="CustomerReg" element={<CustomerRegistrationForm />} />
+              <Route path="CustomerList" element={<CustomerList />} />
+              </Route>
+            <Route path="users" element={<Users />}>
+              <Route path="Registration" element={<AddUser />}>
+                <Route index element={<Navigate to="StaffReg" replace />} />
+                <Route path="AdminReg" element={<AdminRegistrationForm />} />
+                <Route path="StaffReg" element={<StaffRegistrationForm />} />
+                <Route path="RManagerReg" element={<RegionalManagerRegistrationForm />} />
+              </Route>
+              <Route path="userList" element={<UsersList />}>
+                <Route index element={<Navigate to="StaffList" replace />} />
+                <Route path="AdminList" element={<AdminList />} />
+                <Route path="StaffList" element={<StaffList />} />
+                <Route path="RManagerList" element={<RManagerList />} />
+              </Route>
+            </Route>
+            <Route path="settings" element={<Settings />}>
+              <Route path="change-password" element={<ChangePasswordForm />} />
+            </Route>
+          </Route>
+        
+        {/* Fallback Route */}
+        <Route path="*" element={<ErrorPage />} />
+      </Routes>
+    </Router>
+  );
 };
 
 const rootElement = document.getElementById('root');

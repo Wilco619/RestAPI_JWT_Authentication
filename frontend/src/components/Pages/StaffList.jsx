@@ -68,25 +68,25 @@ const StaffList = () => {
     return (
         <div>
             <p>List Of Staff</p>
-            <div style={{ border:"solid 1px black", width:"10%", textAlign:"center"}}>
-                <Box sx={{ flexGrow: 0 }}>
+            <div>
+                <Box sx={{ flexGrow: 0 , backgroundColor: "#135D66", width:"8%", textAlign:"center", borderRadius:"5px", marginBottom:"5px"}}>
                     <Tooltip title="Export List">
-                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 1 ,color:"#fff", fontSize:"1.2em", width:"100%"}}>
                             Export
                         </IconButton>
                     </Tooltip>
                     <Menu
-                        sx={{ mt: '45px' }}
+                        sx={{ mt: '40px' }}
                         id="menu-appbar"
                         anchorEl={anchorElUser}
                         anchorOrigin={{
                             vertical: 'top',
-                            horizontal: 'right',
+                            horizontal: 'left',
                         }}
                         keepMounted
                         transformOrigin={{
                             vertical: 'top',
-                            horizontal: 'right',
+                            horizontal: 'left',
                         }}
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}

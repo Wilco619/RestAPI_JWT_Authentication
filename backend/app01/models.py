@@ -103,6 +103,7 @@ class Customer(models.Model):
     business_type = models.CharField(choices=BUSINESS_CHOICES, max_length=20)
     business_area = models.CharField(max_length=50)
     next_of_keen = models.CharField(max_length=50)
+    next_of_keen_contact = models.CharField(max_length=50)
     guaranter_firstname = models.CharField(max_length=50)
     guaranter_lastname = models.CharField(max_length=50)
     guaranter_age = models.CharField(max_length=2)
